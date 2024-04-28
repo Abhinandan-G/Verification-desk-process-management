@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details - Page 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .student-details {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .student-details p {
+            margin: 5px 0;
+        }
+
+        .verify-button {
+            text-align: center;
+        }
+
+        .verify-button button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .verify-button button[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .verify-button button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="student-details">
+        <h2>Student Details</h2>
+        <p><strong>Name:</strong> <span th:text="${student.name}"> </span></p>
+        <p><strong>Roll Number:</strong>  <span id = "rollNo" th:text="${student.rollNo}"></span></p>
+        <p><strong>Department:</strong>  <span th:text="${student.department}"></p>
+        <p><strong>Year:</strong>  <span th:text="${student.year}"></p>
+        <p><strong>Verified Status:</strong> <span id="verificationStatus1" th:text="${student.verifiedStatus}"></span>></p>
+    </div>
+    <div class="verify-button">
+        <button onclick="verifyStudent()">Verify</button>
+        <p id="verificationStatus"></p>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        var verificationStatus = document.getElementById("verificationStatus1");
+        var verifyButton = document.querySelector('.verify-button button');
+        if (verificationStatus.innerText.trim() === "Yes") {
+            verifyButton.disabled = true;
+            verifyButton.innerHTML = "The student is already verified";
+        }
+    };
+    function verifyStudent() {
+    var verificationStatus = document.getElementById("verificationStatus");
+    if (verificationStatus.innerHTML.trim() === "The student is already verified") {
+        return;
+    }
+    var rollNo = document.getElementById("rollNo").innerText; // Assuming you have an element with id="rollNo" displaying the roll number
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                verificationStatus.innerHTML = "Student verified!";
+            } else {
+                verificationStatus.innerHTML = "Error verifying student!";
+            }
+        }
+    };
+    xhr.open("POST", "/verify", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSON.stringify({ rollNo: rollNo }));
+}
+</script>
+</body>
+</html>
